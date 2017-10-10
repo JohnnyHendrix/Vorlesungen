@@ -985,58 +985,82 @@ Issues of Delegation:
 
     - Outgoing transmissions are signed and a certificate is attached
 
-    - Idea: Use of pseudonyms
+    - Idea: Use of **pseudonyms**
 
-      - Time limited - prevents location tracking
+      - *Time limited* - prevents location tracking
 
-      - Uniqueness - avoid multiple vehicles with same pseudonym 
+      - *Uniqueness* - avoid multiple vehicles with same pseudonym 
 
-      - Availability - possibility to store plenty of pseudonyms locally
+      - *Availability* - possibility to store plenty of pseudonyms locally
   - Lifecycle of pseudonym
-      - Issuance -> use -> change -> change -> resolution -> revocation
+      - **Issuance** (based on long-term vehicle id number) &rarr; **use** (entails authentication of two transmissions)  &rarr; **change** (of ids - pseudonym, IP, MAC - has to occur simultaneously) &rarr; **resolution** (of misbehaving nodes) &rarr; **revocation** (of pseudonyms)
   - Cost of security - payload: Sum 255 Bytes transmission overhead
+      - large propotion of transmission time for security
+
+- **Important key facts**
+
+    - IoT already there (smartcards), dramatic increase in scale and complexity
+    - TC &rarr; mechanism to enforce access control exist, but when chips and sw gets 'ids' for access control, there are issues with privacy and freedom  &rarr; value conflicts 
+    - Intra-vehicle network
+        - Quite obvious on how it could be done (tc), quite obvious that it is not the case today 
+        - Trade-offs between trust, performance, deployability
+        - Access control specification and administrative models still work in progress
+    - Inter-vehicle network
+        - Two issues: cost and privacy
+        - Pseudonyms, plausibility checks
+    - &rarr; A lot of work to be done in the years to come (in research and development)
+    - ACS require enforcement mechanism for authenticity , integrity, confidentiality, availability…anonymity, privacy &rarr; all the protection goals of information security
+    - AC in a broader sense, therefore, covers all of info security
 
 
 ##10 Secure Data Outsourcing & Access/Pattern Confidentiality 		
 
 - **Cryptographically enforced Access Control**
+  - Before logically enforced access control
+    - Based on trust
   - Trust relationship between service provider and service consumer does not neccessarily exist in a cloud or IoT environment
   - We want to be sure that no one (even the service provider) can acces our data in absence of trust
-  - $\rightarrow$ Crypotographically enforced access control
-- Example: Secure Data Outsourcing 
-  - Advantages:	
+  - &rarr; Crypotographically enforced access control
+- Example: **Secure Data Outsourcing **
+  - **Advantages**:	
     - Cost
     - Availability and Scalability
     - Administration
-  - Disadvantage:
-    - Data Confidentiality (one of the Top-3 obstacles for cloud comp)
-  - Challenges 
+  - **Disadvantage**:
+    - *Data Confidentiality* (one of the Top-3 obstacles (Hindernis) for cloud computing)
+  - Content Confidentiality 
     - User do not trust DaaS (Database-as-a-Service) offerings and the storage provider behind that
     - Do not accept the company policies
-  - Naive approach: Encrypt data with probabilistic encryption scheme
+    - Attacker that is able to access the storage of the outsourced database is not able to learn the content of the database's records
+  - *Naïve approach*: Encrypt data with probabilistic encryption scheme
     - Not able to query efficiently
     - Calculations on data are impossible
-  - -> Encrypted index is needed
-  - Content confidentiality:
-    - Attacker who has access to outsourced data is not able to learn the content from that data
+  - -> Encrypted index is needed (Searchable encryption)
   - Problems of encryption techniques
     - Inference attack on static data
       - Attack on deterministic encryption (DTE)
+        1. Frequency sort
+        2. compare with public data
+        3. &rarr; plain text
       - Attack on order-preserving encryption (OPE)
-    - Result: Age, Sex, race, probability of death and severity of illness could be inferred 
-  - -> Security has to be further analyzed
+        1. Frequency sort
+        2. Aggregate data 
+        3. Compare aggregated data with public data
+        4. &rarr; plain text
+      - Result: Age, Sex, race, probability of death and severity of illness could be inferred 
+  - &rarr; Security has to be further analyzed and in some way measured
   - Attacker Models
     - Honest-but-curious attacker analyzing static data
-    - Honest-but-curious attacker access patterns of data
-    - Attacker who has access to data and access patterns and additionally lets the client encrypt data
-- Access Pattern Confidentiality
+    - More powerful: Honest-but-curious attacker access patterns of data
+    - Most powerful: Attacker who has access to data and access patterns and additionally lets the client encrypt data
+- **Access Pattern Confidentiality**
   - It is indistinguishable for an attacker:
-    - which parts of the db were accessed by a db operation
+    - which parts of the db were accessed by a db operation?
     - whether specific data was repeatedly accessed
     - whether the db was queried or updated
-  - -> No information leakage, even if series of accesses to same record
-  - Proposed Protocols: oblivious RAM (**ORAM**) and Burst ORAM
-  - ORAM
+  - &rarr; No information leakage, even if series of accesses to same record
+  - &rarr; Proposed Protocols: <a href="https://en.wikipedia.org/wiki/Oblivious_ram">oblivious RAM</a> (**ORAM**) and **Burst ORAM**
+  - **ORAM**
     - Get and store operations
     - not observable for attackers
 - Our research: ORAM for Databases 
