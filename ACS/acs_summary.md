@@ -26,15 +26,18 @@
 
 <img src="images/acm.png" height="200px" />
 
+- Implementierungsmöglichkeiten:
+  - *Capability Lists (CLs)*
+  - *Access Control Lists (ACLs)*
 - **Capability Lists (CLs)**
-  - Implementierungsmöglichkeit
+  - *Implementierungsmöglichkeit* für ACM
   - Subject-oriented View: Access privileges are stored together with the subject (rows are stored)
   - Only few implementations (e.g. from IBM) $\rightarrow$ determining all access privileges on an object is expensive $\rightarrow$ determining and delegation of access privileges is easy for single entities 
 
 <img src="images/cls.png" height="200px" />
 
 - **Access Control Lists (ACLs)**
-  - Implementierungsmöglichkeit
+  - *Implementierungsmöglichkeit* für ACM
   - Object-oriented view: Access privileges are stored together with the object
   - Gegensatz zu CLs
   - Determining and revoking of access privileges can be implemented efficiently $\rightarrow $ Determining all privileges of an entity can be expensive
@@ -68,24 +71,22 @@ $\rightarrow$ Reference Monitor Concept
 
   - Implementation has to comply with:
 
+      - Evaluable
+        - small enough to be subject to analysis
+      - Always invoked
+        - no alternative access control method
+      - Tamper-proof
+        - Mechanism cannot be altered
 
-  - Evaluable
-    - small enough to be subject to analysis
-  - Always invoked
-    - no alternative access control method
-  - Tamper-proof
-    - Mechanism cannot be altered
+  - Erweitertes Konzept:
+    - Authorization DB
+      - Authorization Informationen 
+    - Monitor Interface
+      - Set of controlled operations
+    - Audit trails
+      - Traceability of access decisions
 
-- Erweitertes Konzept:
-
-  - Authorization DB
-    - Authorization Informationen 
-  - Monitor Interface
-    - Set of controlled operations
-  - Audit trails
-    - Traceability of access decisions
-
-- **Security Kernels**
+- **Implementation - Security Kernels** 
 
   - single most often used technique for building highly secure OS
   - But does not mean that it is always in all security systems or that most people agree that the security kernel is the right way to go
@@ -119,11 +120,11 @@ Implementing OS-Level Access Control using a RM, the OS as well as HW is require
 - **Software: Linux**
   - Linux = POSIX reimplementation -> insufficient security mechanisms
   - Variaty of extensions: implementing different AC Models proposed for upstream integration
-  - Linux security Modules (LSM)
-    - Hooks = Reference Monitor Interface
-    - Kernel Module = Reference Monitor Implementation
+  - **Linux security Modules (LSM)**
+    - Hooks -> Reference Monitor Interface
+    - Kernel Module -> Reference Monitor Implementation
   - Examples for Implementations: AppAmor, SELinux, Smack, TOMOYO, Yama, ...
-- Linux Security Modules
+- *Linux Security Modules*
 
 
 
@@ -139,11 +140,11 @@ Implementing OS-Level Access Control using a RM, the OS as well as HW is require
 
   - -> A single OS vulnerability may corrupt the whole system
 
-  - Intel Software Guard Extensions (SGX)
-    - Set of extensions to intels architecture
-    - Goal: aims to provide integrity and confidentiality guarantees to security-sensitive computation performed on a computer where all the privileged software (kernel, hypervisor,…) is potentially malicious
+  - *Intel Software Guard Extensions (**SGX**)*
+    - Set of extensions to Intels architecture
+    - **Goal**: aims to provide **integrity** and **confidentiality** guarantees to security-sensitive computation performed on a computer where all the privileged software (kernel, hypervisor,…) is potentially malicious
 
-  - SGX = 'reverse Sandbox' -> prtecting apps from system
+  - SGX = 'reverse Sandbox' -> protecting apps from system
 
   - **Enclave** = HW-protected memory region
     - may contain executable code & data
@@ -151,34 +152,34 @@ Implementing OS-Level Access Control using a RM, the OS as well as HW is require
 
   <img src="images/enclave.png" height="180px" />
 
-- **Unaddressed attack vectors**
+  - **Unaddressed attack vectors**
 
-  - cache timing attacks
+    - cache timing attacks
 
-  - microcode attacks
+    - microcode attacks
 
-  - physical attacks
+    - physical attacks
 
     <img src="images/unaddressed_attack_vectors.png" height="180px" />
 
-- HW-enforced Security requires:
+  - HW-enforced Security requires:
 
-  - trusted computing base
-  - HW secrets
-  - remote attestation
-  - Sealed storage
-  - memory encryption
+    - trusted computing base
+    - HW secrets
+    - remote attestation
+    - Sealed storage
+    - memory encryption
 
-- Warnung:
+  - Warnung:
 
-  - Intalling enclaves requires intels license
-  - Enclaved SW cannot be analyzed or monitored
+    - Intalling enclaves requires intels license
+    - Enclaved SW cannot be analyzed or monitored
 
-- possible use cases for Intel SGX
+  - possible use cases for Intel SGX
 
-  - Numecent -> Digital Rights Management (DRM)
-  - Synaptics -> Biometric Matching 
-  - Bromium -> Password Manager
+    - Numecent -> Digital Rights Management (DRM)
+    - Synaptics -> Biometric Matching 
+    - Bromium -> Password Manager
 
 ### Summary
 
@@ -197,11 +198,32 @@ Implementing OS-Level Access Control using a RM, the OS as well as HW is require
 
 ## 2 Access Control Matrix
 
+- **Protection State**: consists of all active and passive components and their privileges over each other
+- -> ACM encodes protection state and formalizes changes (over time) as simple as possible -> Commands
+- ACM can model:
+  - Function call permissions in programs
+  - Data access in DB
+  - Role-based access models
+  - allows model over time
+- primitive **Operations**:
+  - **create** subject *s*; create object *o*
+  - **destroy** subject *s*;destroy object *o*
+  - **enter** r into A[s,o]
+  - **delete** r from A[s,o]
+- duplicate operation does not have any effect on A
 - Commands
 
 <img src="images/acm_commands.png" height="180px" />
 
-- - Create file
+- only conjunctions $\wedge$ are allowed
+
+- only single condition: *Mono-condional*
+
+- only single operation: *Mono-operational*
+
+  ​
+
+- E.g. *Create file*
 
 ```
 command make.file(p, f)
@@ -212,33 +234,154 @@ command make.file(p, f)
 end
 ```
 
-<img src="images/acm_create.png" height="180px" />
+<img src="images/acm_create.png" height="110px" />
 
 - Grant Rights to File
 
-<img src="images/acm_grant_rights.png" height="180px" />
+<img src="images/acm_grant_rights.png" height="110px" />
+
+- **State Transitions**: Represents changes to the transition state ($X_i \vdash _\tau X_{i+1}$ / $X_i \vdash ^* X_{i+1}$)
+- **Leak**: Adding a generic right *r* where there was not one before is called leaking.
+- **safe**: If a system S, beginning in initial state $s_0$, cannot leak right *r*, it is safe with respect to right *r*.
+- **Safety Question**: Does there exist **one** algorithm for determining whether an arbitrary protection system S with initial state $s_0$ is safe with respect to a generic right *r*?
+  - Mono-operational commands: safety question is decidable 
+    - *Sketch of proof*
+      - Consider minimal sequence of commands to leak a right
+      - Show that even in the worst case the sequence length is bounded by a polynomial
+  - General Case: ***Safety Question is undecidable***! 
+    - *Sketch of proof*
+      - Simulate Turing Machine on ACM
+      - Only one "state" right at any given time in ACM
+      - The TM entering halting state $q_f$ equates to right $q_f$ leaking
+      - Reducing Safety Question to Halting Problem
+      - TODO: NOCHMAL HALTEPROBLEM ANSCHAUEN UND BESCHREIBEN KÖNNEN!!
+      - *Conclusion*: Safte Question is undecidable 
+      - Safety Question is complete in P-SPACE
+      - Remove **delete**, **destroy** -> safety question remains undecidable -> such system is called monotonic 
+      - Safety question for monoconditional protection systems with **create**, **enter**, **delete** (but no destroy) is decidable
+- Important
+  - A **Leak** is defined as a right appearing in a cell of the ACM - A system without Leaks is **Safe**
+  - Determining the safety of a general system algorithmically is equivalent to the **Halting Problem ** and is therefore **undecidable**. It becomes decidable for restricted cases 
 
 ## 3 RBAC and Role Mining
 
 - Permission
-  - is an approval of particular mode of access to one or more objects in a system
-  - allways positive
-  - allows the holder to perform some actions in the system
+  - Is an approval of particular mode of access to one or more objects in a system
+  - Allways a positive term
+  - Allows the holder to perform some actions in the system
   - From very coarse grain to very fine grain
+
+- Many Users share same (or very similar) permission set
+
 - Idea: reduce complexity by assigning users to roles and roles to permissions
-- Problems:
-  - Complexity of security administration
+
+- Facing problems:
+  - Complexity of security administration in large systems
   - reduces costs
+
+- RBAC similar to functions a user is allowed to perform within an organization
+
 - Differences between DAC and RBAC
   - User cannot pass access permission to other users at their discretion
+
 - Role: Job function within an organization
-- Security principles that can be modelled by RBAC
-  - Least Privilige
+
+- **Security principles that can be modelled by RBAC**
+  - Least privilege
   - Speration of duties
-  - Dual control Data abstraction
+  - Dual control
   - Data abstraction
+
 - Limitations: cannot control sequence of operations
+
+- Roles vs Groups
+
+  - Groups: Collection of users (not of permissions)
+  - Role: Collection of users AND of permissions
+  - Role as intermediary to bring these two collections together
+  - Role characteristics:
+    - approcimately easy to determine role membership and role permissions
+    - Control of role membership and role permissions should be relatively centralised in a few users
+  - Many mechanisms fail in one or both characterstics
+
 - Types: RBAC, RBAC1, RBAC2
+
+  <img src="images/rbac_models.png" height="160px" />
+
+- **$RBAC_0$**
+
+  - RBAC =(U, R, P, S, PA, UA, user, roles)
+    - *user*: S -> U
+    - *roles*: S -> $2^R$ 
+  - Support least privilege by allowing users to login to a system with only those roles appropriate for given occasion (-> Session)
+    - A user who is a member of a powerful role can normally keep this role deactivated and explicity activate it when needed
+  - Session
+    - Each session is mapping of one user to possibly many roles
+
+- $RBAC_1$
+
+  - Hierarchical RBAC
+  - Hierarchies are a natural means of structuring roles to reflect an organization's lines of authority and responsibility 
+  - similar to RBAC: No changes to RBAC(U, R, P, S, PA, UA, user)
+    - BUT: Additionally 
+      - **RH  $\subseteq$ R x R** is a partial order on R called the role hierarchy or role dominance relation, also written as $\ge$ 
+      - $roels: S \rightarrow 2^R$ is modified from RBAC_0 to require $role(s_i) \subseteq \{r | (\exists r' \ge r)[user(s_i) \in UA]\}$  (which can change with time) and session $s_i$ has the permission $\cup _{r \in roles(s_i)} \{p | (\exists r'' \le r) [(p,r'') \in PA]\}$ 
+  - Hierarchies are partial orders:
+    - Reflexive: a role inherits its own permissions
+    - Transitive: allows real hierarchies  
+    - Antisymmetric: Two roles can't inherit each other
+
+- $RBAC_2$
+
+  - Also constrained RBAC 
+  - Unchanged from RBAC_0 
+    - Except fro requiring that there be a collection of constraints that determine whether or not values of various components of R_0 are acceptable
+    - Only acceptable values will be permitted
+  - Most frequently constraint: mutually exclusive roles
+    - Supports seperation of duties
+  - Example for constraints: 
+    - Same user can be assigned to at most one role in a mutually exclusive set
+    - A role can have a maximum number of members
+  - Implementation as
+    - Constraints - *give restrictions to RBAC state*
+    - Prequisite conditions -  *give restrictions to RBAC state changes* 
+
+- **Administrative Model**
+
+  - Who is allowed to change RBAC state
+
+  - ARBAC97: use "administrative roles" to assign administrative permissions
+
+    <img src="images/rbac_arbac97.png" height="300px" />
+
+  - defines who is allowed to assign users to roles
+
+  - assembles roles to **role ranges**
+
+  - enables prerequisite roles for administrative roles
+
+  - can-assign $\subseteq AR \times CR \times 2^R$ 
+
+  - Can-revoke $\subseteq AR \times 2^R$ 
+
+    - assignment rights independent of revocation rights
+
+- **Role Engineering**
+
+  - Process of determining the role-configuration for any RBAC system
+    - Roles
+    - User to Role Assignment (UA)
+    - Role to permission assignment (RA)
+  - several approaches are possible
+  - Role Mining
+    - Automated
+    - Data driven
+    - Bottom-up
+  - Role Mining as Optimization Problem
+  - $\delta$-approx. RMP
+  - Minimal Noise RMP
+  - RMP is NP-hard
+  - RMP can be reduced to Boolean Matrix Decomposition (also NP-hard)
 
 ## 4 Attribute based Access Control (ABAC)
 
@@ -309,6 +452,8 @@ ABAC Architecture
 
 
 
+- !!!!!! Phases are important !!!!!
+
 #### Delegation
 
 Delegation enables a user to temporarily and dynamically alter the design of an access control system after policies have been created to account for everyday changes that policies are insufficient (mangelhaft) to address.
@@ -319,7 +464,7 @@ Delegation enables a user to temporarily and dynamically alter the design of an 
 
 - Delegatee (Where are the elements delegated to?)
 
-- Delegated access right (what is beeing delegated?
+- Delegated access right (what is beeing delegated?)
 
 
 In contrast to DAC, MAC, RBAC in ABAC systems Delegation is more complicated, because we can not only delegate permissions, but also attributes (identity less access control)
@@ -459,16 +604,18 @@ Issues of Delegation:
   - Cloud env bring their own set of requirements and usage scenarios
   - Environment: *Customisable Access Policy Groups, System Admins, Cloud Apps*  
   - **Problems**
-    - Can we use RBAC? -> No:
-    - Cloud resources and services tend to be very dynamic, due to the ease of service deployment (Software-as-a-service)
-    - Variety of trusted domains offer a variety of services (even in different countries with different set of laws)
-    - Sharing resources among potential untrusted tenants
-    - Mechanism to support the transfer of customers credentials to access services and resources 
-    - -> ABAC? No, complexity is already difficult to handle in a closed system
+    - Can we use *RBAC*? -> No:
+      - **Cloud** resources and services tend to be very **dynamic**, due to the ease of service deployment (Software-as-a-service)
+      - Variety of trusted domains offer a variety of services (even in different countries with different set of laws)
+      - Sharing resources among potential untrusted tenants
+      - Mechanism to support the transfer of customers credentials to access services and resources 
+    - We need flexibility and a dynamic approach
+    - -> *ABAC*? No! complexity is already difficult to handle in a closed system
   - **Requirements**
     - 2014 collected by Younis (but still pretty vage)
     - Dynamic performance and mobility features
     - Trust
+      - Trust relationship between customer and cloud provider
   - **Solutions**
     - AC3
     - HASBE
@@ -479,12 +626,12 @@ Issues of Delegation:
 
   - **Directory Services**
 
-    - special purpose directory for naming
-    - quieries based on attributes
-      - Compare: DNS req
+    - Special purpose directory for naming
+    - Quieries based on attributes
+      - Compare: DNS requests
       - Example: yellow pages
-    - *X.500* traditional dir service
-    - *Lightweight Directory Access Protocol* (LDAP)
+    - ***X.500*** traditional directory service
+    - ***LDAP*** - Lightweight Directory Access Protocol
     - Example for X.500 & LDAP
       - Basic data set in database directory: (Attribute, Value)-Pair
       - (Organisation, Karlsruher Institut für Technologie), (OU, Telematik), (Name, Max Mustermann), (EMAIL, maxmustermann@kit.edu)
@@ -501,33 +648,53 @@ Issues of Delegation:
 
     - Umbrella title for many different services
 
+    - Has Information about all internall information in an organization's network(users, printers, computers …) 
+
     - *Main Parts*:
 
       <img src="images/ad_mainparts.png" height="380px" />
 
-    - Domains and Trusts
+    - **Domains and Trusts**
 
-    - Forests
+      - Logical and administrative grouping of objects
+      - Trsuting only in Domain Tree
+      - **Domain Controller** 
+        - responsible for al authentications and authorisations, additions, deletions and modifications inside a Domain
+      - **Organizational Units**
+        - can only appear inside a Domain
+        - unique inside a domain
+        - Team, Department or Location
+      - Domain cannot be moved into or out of forests
+
+    - **Forests**
+
+      - Highest level of security boundary
+      - To communicate information between different trees manual created Forest Level trusts are required
+      - Schema is consistant through out the forest 
 
     - Sites and Forests
 
     - Operation Master Roles
 
       - Forest Level (1 per forest)
+        - Schema master
+        - Domain naming master
       - Domain Level (1 per domain)
+        - Primary domain controller emulator
+        - Infrastructure master
 
 
   - **Limitations of local AD**
     - AD designed for internal on premise environment
     - Can only be connected to outward services either fully open or fully manual (both undesireable in cloud env)
-      - fully open: information in many cases critical and cannot be shared with other services
-      - Fully manual: Cloud envs are too dynamic to set up every access right to any resource within AD
+      - *fully open*: information in many cases critical and cannot be shared with other services
+      - *Fully manual*: Cloud envs are too dynamic to set up every access right to any resource within AD
       - Identity Federation, SSO and many req can be only realized poorly
 
-- **Windows Azure Active Directory**
+- **Windows Azure Active Directory** (WAAD)
 
   - **Overview**
-    - Implemented as a "road toward the Azure cloud"
+    - Implemented as a "road towards the Azure cloud"
     - Works as a mediator between AD and Cloud  services -> makes it easier for businesses
     - Internal architecture changed significantly from a single hierarchy to a module-based framework
   - **Dynamic group members**
@@ -541,6 +708,11 @@ Issues of Delegation:
 
 
 
+
+- Discussion
+  - Which challenges that Younis identified are covered by the dynamic group function of AAD?
+  - Which challenges are still open?
+  - Which strategy would you use in a small/large business?
 
 ## 8 Digital Rights Management (DRM)  		
 
@@ -585,25 +757,29 @@ Issues of Delegation:
            2. Encrypted key is available to the license server
            3. content is staged for delivery
            4. Client discovers content
-           5. To encrypted content client sends a license req to license server
-           6. Server authenticates client and sends license back to client
-           7. Clients plays unencrypted content back according to policies defined in license  
+           5. To encrypted content client sends a license request to license server
+           6. Server authenticates client and issues license to client
+           7. Clients plays unencrypted content back according to policies defined in license. For example restricting playback to a secure HDMI port to safeguard against copying
 
 - Usage control
 
-  - generalization of access control
+  - Term generalization of access control
 
   - Covers:
 
     - Authorisations
     - Obligations
     - Conditions
-    - Continuity 
-    - Mutability
+    - **Continuity **: Decision to allow access is not only made prior to access, but also during the time interval that access takes place
+    - **Mutability** (Erweiterbarkeit): allows certain updates on subject or object attributes as side effect of usages
+
+  - Unified Framework for DRM and access control
 
   - UCON model
 
     - provides family of core models for usage control 
+
+    - **sensitive information protection** has been one of the most important goals of traditional access control
 
     - Park/Sandhu $UCON_{ABC}$, 2004
 
@@ -619,21 +795,59 @@ Issues of Delegation:
 
   - Components of UCON
 
-    - Subjects (S) and Subject attribute (ATT(S)): *S=user, ATTS={user_group}* 
-    - Objects (O) and Object attribute *(ATT(O)): O=file, ATTO={security_level}*
-    - Rights (R): R=read
-    - Authorizations(A): preA and onA
-    - Obligations(B): preB and onB
-    - Conditions(C): preC and onC
+    - **Subjects (S)** and Subject attribute (ATT(S)): *S=user, ATTS={user_group}* 
+    - **Objects (O)** and Object attribute *(ATT(O)): O=file, ATTO={security_level}*
+    - **Rights (R)**: R=read
+    - <u>**Authorizations(A)**</u>: preA and onA
+      - functional predicates that have to be evaluated for usage decision and return whether the subject (requester) is allowed to perform the requested rights on the object	
+    - <u>**Obligations(B)**</u>: preB and onB
+      - functional predicates that verify mandatory requirements a subject has to perform before or during a usage exercise
+      - Beispiele: 
+        - preB: Formular ausfüllen oder AGBs akzeptieren bevor man den Service nutzen kann	
+        - onB: Ansehen von Werbungen während einer Session, in der er eingelogged ist
+    - **<u>Conditions(C)</u>**: preC and onC
+      - Conditions are environmental or system-oriented decision factors
+        - Location checking
+
+  - UCON_ABC family of core models
+
+    - Mutability of attributes
+
+    <img src="images/ucon_table.png" height="140px" />
+
+  - Examples:
+
+    - preA0: Authorization is taken before access is allowed, no attributes changed
+    - preA1: preA0 + preUpdate(ATT(s)), preUpdate(ATT(o))
+    - preA2: preA0 + postUpdate(ATT(s)), postUpdate(ATT(o))
+    - MAC: UCON model preA0
+    - DRM pay-per-use with a prepaid credit: UCON model preA1
+    - DRM membership-based metered payment: preA3
+    - UCON model onA13: A limited number of simultaneous usages, revocation using usage start time
+    - UCON model preB0: A license agreement obligation, every time
+    - onB0: Watch ad windows while s exercises r
+    - preC0: Location limitation
+    - onC0: Time limitation
+      - Workflow example:
+        - A medical doctor (s) can perform (r) an operation (o) only if he has performed operations more than 3 times
+          - …and only if patients agree on a consent form
+
+    <img src="images/ucon_models.png" height="380px" />
 
   - **Administrative model**
 
+    - Unlike immutable attributes, mutable attributes are modifiable as a consequence of subject's actions -> do not require administrative action for update
     - Distinguishes between providers, consumers and Identify subjects -> Baseline setup for IoT scenarios
-    - Mutable attributes are modifiable as a consequence of subject's actions and do not require any administrative action for updates (unlike immutable attributes).
     - $UCON_{ABC}$ model seperates core models from administrative issues
 
 
-​	
+​	<img src="images/ucon_admin.png" height="380px" />
+
+- **Important Key notes**
+  - DRM refers to controlling and managing rights to digital intellectual property
+  - Usage control provides a 'unified framework' for DRM and access control
+  - UCON$_{ABC}$ provides a family of core models for usage control
+  - Admin model distinguishes between providers, consumers and Identifiee subjects -> baseline setup for IoT scenarios 
 
 ## 9 The Internet of Things - IoT
 
@@ -663,17 +877,18 @@ Issues of Delegation:
 
     <img src="images/micro_smc.png" height="120px" />
 
-  - Example: Mifare Classic (known hack on it)
+  - Example: <a href="https://de.wikipedia.org/wiki/Mifare">Mifare Classic</a> (known hack on it)
 
-  - Typical security features
+  - **Typical security features**
 
-    - Tamper proof design:
+    - *Tamper proof design*:
       - Manual chip layout
       - Mechanisms against various attacks
         - physical attacks of various forms
         - freezing the device
         - applying unusual clock signals
         - inducing software errors using microwaves
+    - Security logic and card os might be in mask ROM
     - PIN/PUK mechanisms
     - Access Control for file system
 
@@ -681,45 +896,46 @@ Issues of Delegation:
 
 - **Trusted Computing**
 
-  - A technology which is taken from the field of trusted systems where the computer will consistently behave in expected ways 
+  - A technology which is taken from the field of *trusted systems* where the computer will consistently *behave in expected ways* 
 
-    - Behavior will be enforced by hardware and software
+    - Behavior will be enforced by *hardware* and *software*
     - Behavior is archieved by loading the hardware with a unique encrypted key
     - the encrypted key is unaccessable to the rest of the system
   - Controversy: 
-    - hardware is not only secured for its owner -> also secured against its owner
-  - Key concept:
-    - Endorsement key -> chip gets identity
-    - Secure input/output -> hinders attacks like key-stroke loggers and screen scrapers
-    - Memory curtaining /protected execution -> strong memory isolation
-    - Sealed storage -> allows software to keep cryptographically secure secrets
-    - Remote attestation -> software gets identity
+    - hardware is not only secured for its owner &rarr; also secured **against** its owner!
+  - **Key concept**:
+    - Endorsement key &rarr; *chip gets identity*
+    - Secure input/output &rarr; hinders attacks like key-stroke loggers and screen scrapers
+    - Memory curtaining /protected execution &rarr; strong memory isolation
+    - Sealed storage &rarr; allows software to keep cryptographically secure secrets
+    - Remote attestation &rarr; software gets identity
 
 - **Access control in vehicles**
 
   - Connected with personal devices, other cars, road operators
 
-  - various wireless interfaceses
+  - Various wireless interfaceses
 
   - Simplified accessibility by attackers
 
-  - Example Hack: Jeep Cherokee
+  - *<u>Example Hack</u>*: Jeep Cherokee
 
-    - remote attack against unaltered vehicle (braking, steering, ...)
+    - Remote attack against unaltered vehicle (braking, steering, ...)
     - Injection of CAN messages
     - wireless remote access
     - Recall of 1.4 Million vehicles
     - But still vulnerable to local attacks
 
-  - Further examples:
+  - *Further examples*:
 
     - BMW Connected Drive
       - unauthorized door opening
     - Corvette-SMS-Hack
       - Via insurance telematics system
     - Engine immobilizer, Tesla Model S, General Motors "OnStar"
+    - many more ...
 
-  - Coarse grained view:
+  - *Coarse-grained view*:
 
     - Protection against external attacks
     - Protection of personal data
@@ -730,23 +946,31 @@ Issues of Delegation:
 
     - Vehicle IT has historically evolved 
 
-    - Interaction with its environment -> which information should we trust?
+    - Interaction with its environment &rarr; which information should we trust?
 
     - Communication between vehicles
 
 - **Intra-vehicle Networks**
 
-    - requirements
-        - Confidentiality , integrity, availability, authenticity, non repudiation, privacy
+    - Requirements
+        - **Confidentiality** (sw-updates confidential) , **integrity** (no authorized change), **availability** (functions and network available all time), **authenticity** (devices should be who they claim), **non repudiation** (changes to system needs to be accountable), **privacy** 
 
-  - Architecture 
-    - Multitude of different bus systems & protocols
-    - connected to each other via a central gateway
-    - remote access possible
+      - **Architecture **
+        - Multitude of different bus systems & protocols
+        - connected to each other via a central gateway
+        - remote access possible
 
-  - Achieving security
-    - Hardware Security Modules (HSM)
-      - requirement: Security must not be a bottleneck
+      - **Achieving security**
+        - Hardware Security Modules (HSM)
+          - protect sw security measures by acting as trusted security anchor
+          - Securely generate, store, and process security-critical material shielded from any potentially malicious sw
+          - Hue design space of HSMs regarding:
+              - Processing power
+              - Crypto engines
+              - Random number generator
+              - Secure Clock
+              - Key management
+          - Requirement: Security must not be a bottleneck
 
 - **Security in inter-vehicle networks (C2X)**
 
@@ -816,15 +1040,28 @@ Issues of Delegation:
     - Get and store operations
     - not observable for attackers
 - Our research: ORAM for Databases 
-  - PATCONFDB
+  - PATCONFDB (high query latency)
   - Issues with multiple indices
-
-
+    - Attacker can differentiate between euqality selections and insert/delete operations
+    - solutions: 
+      - Query every index for equality selection
+      - -> Poor performance, but selections are indistinguishable
 
 ## 11 Secure Data Sharing
 
 - Challenge: Secure Data Sharing
+  - external storage provider
+    - Advantages:
+      - Availability
+      - Badwidth
+      - Simple Administration
+    - Disadvantages
+      - Confidentiality and Integrity of data is threatened
+    - In contrast to Data Outsourcing sharing is now an explicit requirement
+    - Obvious solution: Data encryption -> prevents server-side inspection and provides integrity 
   - Key management
+    - naive approach: provide the data key directly to others
+      - con: revocation of access rights is expensive
   - Revocation
 - Shared Cryptographic File Systems
   - SiRiUS
