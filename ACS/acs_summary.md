@@ -88,6 +88,8 @@ $\rightarrow$ Reference Monitor Concept
 
 - **Implementation - Security Kernels** 
 
+  - Reference Validation Mechanism (RVM) or **Security Kernel**
+
   <img src="images/rm_rvm.png" height="180px" />
 
   - single most often used technique for building highly secure OS
