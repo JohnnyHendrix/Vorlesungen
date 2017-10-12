@@ -1001,11 +1001,11 @@ Issues of Delegation:
 
     - IoT already there (smartcards), dramatic increase in scale and complexity
     - TC &rarr; mechanism to enforce access control exist, but when chips and sw gets 'ids' for access control, there are issues with privacy and freedom  &rarr; value conflicts 
-    - Intra-vehicle network
+    - **Intra-vehicle network**
         - Quite obvious on how it could be done (tc), quite obvious that it is not the case today 
         - Trade-offs between trust, performance, deployability
         - Access control specification and administrative models still work in progress
-    - Inter-vehicle network
+    - **Inter-vehicle network**
         - Two issues: cost and privacy
         - Pseudonyms, plausibility checks
     - &rarr; A lot of work to be done in the years to come (in research and development)
@@ -1028,7 +1028,7 @@ Issues of Delegation:
     - Administration
   - **Disadvantage**:
     - *Data Confidentiality* (one of the Top-3 obstacles (Hindernis) for cloud computing)
-  - Content Confidentiality 
+  - **Content Confidentiality **
     - User do not trust DaaS (Database-as-a-Service) offerings and the storage provider behind that
     - Do not accept the company policies
     - Attacker that is able to access the storage of the outsourced database is not able to learn the content of the database's records
@@ -1063,33 +1063,103 @@ Issues of Delegation:
   - **ORAM**
     - Get and store operations
     - not observable for attackers
+    - ORAM is an interface between a program and the physical RAM
+      - Performing a read (get) or write (store), does both at the same time on the physical RAM to hide if you are reading or writing. 
+      - Plus, it shuffles the memory from time to time so that an adversary seeing only accesses to the physical RAM cannot know whetever you accessed the same data twice or accessed two different data. Thus hiding the access patterns to the physical RAM.
+  - **Burst ORAM**
+    - Get: XOR of all blocks
+    - Store: Shuffle jobs per partition
+  - <a href="https://2459d6dc103cb5933875-c0245c5c937c5dedcca3f1764ecc9b2f.ssl.cf2.rackcdn.com/sec14/dautrich.mp4">Minimizing ORAM Response time</a>
 - Our research: ORAM for Databases 
-  - PATCONFDB (high query latency)
+  - &rarr; **PATCONFDB** (high query latency)
+    - Use ORAM as a building block for confidentiality-preserving relational databases
+    - Possible operations: selection, insertions, update and delete
+    - For efficiently use of ORAM we need an efficient index structure for range and prefix selection &rarr; B-tree, layered architecture
+    - Access a record: 
+      1. Query the root
+      2. Query ORAM index Layer 1 
+      3. Query ORAM index Layer 2
+      4. Query ORAM Record Store
+    - Every Layer is stored in a seperate ORAM instance
   - Issues with multiple indices
     - Attacker can differentiate between euqality selections and insert/delete operations
-    - solutions: 
-      - Query every index for equality selection
-      - -> Poor performance, but selections are indistinguishable
+      - solutions: 
+        - Query every index for equality selection
+        - &rarr; Poor performance, but selections are indistinguishable
+    - Attacker can differentiate between equality selections and prefix/range selection
+      - Solution:
+        - Execute range and prefix selections as a sequential series of equality selections 
+        - &rarr; Poor performance, but selections are indistinguishable 
+    - Attacker can differentiate between update and others
+      - Solution:
+        - Perform a 2nd query on Nav tree after every operation on database 
+- **Important key facts**
+  - Cryptographically enforced access control can be a good alternative for scenarios, in which there is no trust relationship between a service provider and a service user 
+  - Access Pattern Confidentiality must be taken into consideration in almost all outsourcing scenarios 
+  - The performance of proposed approaches improves quickly 
+  - ORAM, Burst ORAM 
+  - In database scenarios with multiple indices, several new problems are introduced when it comes to information leakage
+  - Takeaway messages: 
+    - Encryption is not sufficient in outsourcing many scenarios
+    - Thinking about information leakage is a good excercise to evaluate the security of protocols
 
 ## 11 Secure Data Sharing
 
-- Challenge: Secure Data Sharing
-  - external storage provider
-    - Advantages:
-      - Availability
-      - Badwidth
-      - Simple Administration
-    - Disadvantages
-      - Confidentiality and Integrity of data is threatened
-    - In contrast to Data Outsourcing sharing is now an explicit requirement
-    - Obvious solution: Data encryption -> prevents server-side inspection and provides integrity 
-  - Key management
-    - naive approach: provide the data key directly to others
-      - con: revocation of access rights is expensive
-  - Revocation
-- Shared Cryptographic File Systems
-  - SiRiUS
-  - Boxcryptor 2.0
+- External storage provider
+  - **Advantages**:
+    - Availability
+    - Badwidth
+    - Simple Administration
+  - **Disadvantages**
+    - *Confidentiality* and *Integrity* of data is threatened
+  - In contrast to Data Outsourcing **sharing** is now an explicit requirement
+  - Obvious solution: Data encryption &rarr; prevents server-side inspection and provides integrity 
+    - But how to share encrypted data with others
+- **Naive Key management**
+  - Naive approach: provide the data key directly to others
+    1. User A generates symmetric key
+    2. Encrypts data with key 
+    3. Stores data at the SP 
+  - Con: revocation of access rights is expensive
+    - create new keys
+    - Re-encrypt data with new key and upload encrypted data
+    - provide the new key to all users that are still authorized to access the data
+- &rarr; Revocation is very expensive
+- &rarr; key exchange using already exchanged keys
+  - initial exchange of keys between users necessary
+  - key for user data (and further keys) are encrypted using the initially exchanged keys and are stored together with the user data
+  - exchange key can be symmetric or asymmetric
+    - Exchange of symmetric key comparable to kerberos
+      - Initial exchange of a keyphrase between user and authN and calculation of master key K$_A$ 
+      - Session key S$_A$ is created by the KDC encrypted with K$_A$ and sent to the user
+- **Lockbox**: encrypted key
+
+
+- **Shared Cryptographic File Systems**
+
+  - Confidentiality 
+    - encryption/decryption on client-side
+    - Only encrypted data stored on server
+  - Integrity
+    - Through signatures and Message Authentication Codes
+  - Possible implementations: 
+    - own file system
+    - Overlays to existing file systems
+  - **SiRiUS**
+    - Ensures **confidentiality** and **integrity** of data
+      - First encrypt data and then sign data before upload to SP
+    - Overlay of File System with metadata in metadata files
+      1. *Create* symm FEK creation
+      2. *Create* FSK$_{pub}$
+  - **Boxcryptor 2.0**
+    - Confidentiality of data
+    - Integrity of data is not ensured cryptographically
+    - Overlay to existing files system
+      - transparent encryption in an additional layer of the file system
+      - Metadata are partly stored with the actual data and partly at Boxcryptor‘s key server
+
+  <img src="images/scfs.png" height="320px" />
+
 - Discussion:
   - The price of secure data sharing (performance)
     - Abstract representation via key graphs?		
@@ -1098,7 +1168,25 @@ Issues of Delegation:
 
 ## 12 Blockchain and Bitcoin
 
-​		
-​				
-​		
-​	
+- **Human-readable Identities (Zooko’sTriangle)**
+
+  - “Clients need to know the public key of the payee”				
+  - Desired Properties
+    - **Specificity**
+    - **Memorability**
+    - **Transferability**
+    - **Decentralization**
+  - Only choose three of the above properties:
+    - No specificity: Name, Nickname
+    - No memorability: Pub key hashes
+    - No transferability: Locally stored pub key db
+    - No decentralization: Domain names
+
+- Observation so far: 
+
+  - Bank can be run without identities 
+  - Users use their pubkey as pseudonyms &rarr; good for privacy 
+  - BUT: Users need to exchange their pseudonyms out-of-band and users have to trust the bank
+
+  ​		
+  ​	
