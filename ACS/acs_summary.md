@@ -1232,14 +1232,39 @@ Issues of Delegation:
 
 ## 12 Blockchain and Bitcoin
 
+- Blockchain = is data structure that can be used as a decentralised DB
+
+- Bitcoin = decentralised electronic currency system
+
+  - Uses peer-to-peer network and blockchain
+
+- What has to be protected by the bank's access control system?
+
+  - Authenticity, Confidentiality, integrity non-repudiation
+  - Availability (maybe), Anonymity/Privacy (No)  
+
+- Components 
+
+  - **Secure channel**: Confidentiality and integrity
+  - **Signature**: integrity and non-repudiation 
+  - **AC Policy**: Only owner is allowed to issue transaction from his account
+  - **AC Mechanism**: Verirfy signature with stored public key; check balances
+
+- Banks PKI: users PK
+
+  - running PKI means a lot of effort (validating ids, rekoing keys, etc.) &rarr; IdManagement
+  - Implementation
+    - Bank does not know his clients 
+    - &rarr; clients need to know the public key of the payee
+
 - **Human-readable Identities (Zooko’sTriangle)**
 
-  - “Clients need to know the public key of the payee”				
+  - “Clients need to know the public key of the payee” &rarr; like email				
   - Desired Properties
-    - **Specificity**
-    - **Memorability**
-    - **Transferability**
-    - **Decentralization**
+    - **Specificity**: one party has a better claim to name than any other
+    - **Memorability**: easily rememver name
+    - **Transferability**: give name to someone else
+    - **Decentralization**: no central body to whom ultimate authority
   - Only choose three of the above properties:
     - No specificity: Name, Nickname
     - No memorability: Pub key hashes
@@ -1250,7 +1275,60 @@ Issues of Delegation:
 
   - Bank can be run without identities 
   - Users use their pubkey as pseudonyms &rarr; good for privacy 
-  - BUT: Users need to exchange their pseudonyms out-of-band and users have to trust the bank
+  - BUT: Users need to exchange their pseudonyms out-of-band (today: IBAN) and users have to trust the bank!
+
+- **Bitcoin**
+
+  - Goal
+
+    - Public verifiability via cryptographic proof
+    - No trust in thrid party middleman needed
+
+  - Public verifiability 
+
+    - Publish all infos required to verify the state of the ledgers
+    - everyone can verify the correcness of all transactions
+      - check signature (is the sign correct?)
+    - Transaction not confidential anymore!
+      - users can create unlimeted number of pubKeys (pseudonyms)
+      - Research: linking between pubkeys and real-word ids possible
+    - Approach so far: publish all transactions including their signatures
+    - Ensures that only the real owner of money can spend the money
+    - Problem: bank supresses certain transactions, bank changes the transaction history
+    - Example attack:
+      0. An employee of the bank buys something from a vendor
+      1. The employee creates a valid transaction transferring funds from his own account to the public key of the vendor
+      2. The bank publishes the transaction
+      3. The vendor sees the published transaction and delivers the goods
+      4. The employee removes the transaction from the transaction graph
+      5. The vendor cannot spend the received funds
+    - Required: Immutability
+
+  - Bank: Transaction moves funds from one account to another account
+
+  - Bitcoin: Transaction moves funds from a specific input to an account to another account
+
+    - One output can only be spent once &rarr; no balance calculation required
+
+    <img src="images/bc_transaction.png" height="320px" />
+
+  - Transaction graph
+
+    <img src="images/bc_transgraph.png" height="180px" />
+
+  - All transactions and their reference can be modeled as adirected acyclic graph
+
+  - No more explicit ledgers
+
+  - Account: Set of all pubkeys of a user
+
+  - Blance: all unspent transaction outputs of a user (Inputs - outputs)
+
+  - ​
+
+  - Bitcoin Scripts
+
+    - Bitcoin Scripts - Bitcoin and Cryptocurrency Technologies: https://www.youtube.com/watch?v=ci1jFDRPoCw
 
   ​		
   ​	
