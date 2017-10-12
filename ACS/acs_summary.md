@@ -452,7 +452,19 @@ ABAC Architecture
 
 
 
-- !!!!!! Phases are important !!!!!
+- 4 phases to implement ABAC
+
+<img src="images/abac_phases.png" height="380px" />
+
+- Questions you have to ask yourself during a phase:
+  - **Initial**
+    - What are the important benefits?
+  - **Acquisition**
+    - Are access rules and policies fully understood and documented?
+  - **Implementation**
+    - How are subject attributes managed for disconnected bandwith-limited or resource-limited users? 
+  - **Operations**
+    - How can attributes and the access decisions be monitored? 
 
 #### Delegation
 
