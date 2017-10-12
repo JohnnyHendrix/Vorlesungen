@@ -1193,13 +1193,41 @@ Issues of Delegation:
         4. **Create** symmetric FEK
         5. **Encrypt** file with FEK and store file on file server
         6. **Encrypt** FEK with UA$_{pub}$ and store lockbox on file server
+      - Granting UB acces to file
+        - Encrypt FEK with UB$_{pub}$ and store lockbox on file server
+      - Creating groups with UA and UB as members
+        1. **Create** asymmetric GK$_{pub}$ and GK$_{priv}$
+        2. **Create** symmetric Group membership key GMK
+        3. **Encrypt**  GK$_{pub}$ and GK$_{priv}$ with GMK and store lockbox on key server
+        4. **Encrypt** GMK with UA$_{pub}$ and UB$_{pub}$ and store lockboxes on key server
+      - Granting group access to file
+        - Encrypt FEK with GK$_{pub}$ and store lockbox on file server
+      - Not covered in lecture: further necessary keys to encrypt file names
+      - "Company" keys to encrypt pw keys of all employees
+      - Boxcryptor combines functionallity of Certification Authority and Shared Cryptographic file System
+      - Revocation of access rights not entforced cryptographically
 
   <img src="images/scfs.png" height="320px" />
 
+- Disadvantage of Secure Data Sharing:
+
+  - needs resources
+    - CPU time: Creation of keys
+    - Bandwidth: sending and receiving of encrypted keys
+    - Storage: storage of keys
+
 - Discussion:
+
   - The price of secure data sharing (performance)
     - Abstract representation via key graphs?		
 
+- **Important key facts**
+
+  - Secure Data Sharing (SDS) enforces access control by cryptographic means
+  - SDS “complements” Secure Data Oursourcing with elements for client-side control and sharing functionality &rarr; cryptographic enforcement of integrity, freshness
+  - Basic building blocks come from **shared cryptographic file systems **(SiRiUS) and are deployed (to some extend) in current services like Boxcryptor
+  - **Revocation of rights **can be resource-intensive (eager revocation); lazy revocation is less resource-intensive, but might not meet security requirements
+  - Active current research on **performance **of secure data sharing. Research on usability required as well (**key management, group key management**) &rarr; **Key graph **as fundamental concept for analysis of secure data sharing
 
 
 ## 12 Blockchain and Bitcoin
