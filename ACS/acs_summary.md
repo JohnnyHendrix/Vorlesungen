@@ -1284,7 +1284,7 @@ Issues of Delegation:
     - Public verifiability via cryptographic proof
     - No trust in thrid party middleman needed
 
-  - Public verifiability 
+  - **Public Verifiability **
 
     - Publish all infos required to verify the state of the ledgers
     - everyone can verify the correcness of all transactions
@@ -1303,6 +1303,14 @@ Issues of Delegation:
       4. The employee removes the transaction from the transaction graph
       5. The vendor cannot spend the received funds
     - Required: Immutability
+
+  - &rarr; Blockchain
+
+    - Idea: Aggregate a set of valid transactions in a block and publish that block 
+    - a transaction is committed when it appears in a block 
+    - Chain the blocks using hash function to prevent insertion or removal of blocks after publishing
+    - &rarr; client needs to store newest hash values in order to detect any changes
+    - &rarr; Many clients are able to verify correct behaviour of bank
 
   - Bank: Transaction moves funds from one account to another account
 
@@ -1324,11 +1332,71 @@ Issues of Delegation:
 
   - Blance: all unspent transaction outputs of a user (Inputs - outputs)
 
-  - ​
+  - Now: centralized third-party that has hard time creating without others noticing
+
+    - But bank can still censor certain transactions and may simply stop operating!
+
+  - &rarr; **Decentralize banking functionality  in peer-to-peer**
+
+    - open network: everyone can run a client and connect to network
+    - peers store state and forward state updates to neighbours &rarr; "Flooding network"
+
+  - **The Double Spending Problem**
+
+    - Information propagated through network can be inconsistent
+    - Double spend: A user creates two valid transactions using the same input that move the funds to different outputs
+    - &rarr; Different nodes have a different view of the transaction graph - Consistency!
+
+  - Every peer on network receives all transactions
+
+    - Problem: Who is authorised to publish blocks?
+    - &rarr; Naive Idea: **Majority voting** on the network
+      - Vulnerable to Sybil attacks
+    - Better: Voting based on **computing power** instead of network power
+      - In order to publish a new block, a computationally expensive task has to be solved (**mining**)
+      - Task: Task: The hash value of the block must be smaller than a difficulty value
+      - Difficulty value is adjusted so that on average every 10 minutes a block is found
+      - Other peers verify the correct solution to the task
+
+  - **Mining**
+
+    - users publish transactions on the network &rarr; miners collect transactions, discard invalid transactions &rarr; miners try solve mining puzzle
+    - when miner finds a solution to the puzzle
+      - publishes the block
+      - Other peers verify all transactions in the block and the solution to the puzzle
+      - If Block valid &rarr; miners start working on new block that includes the hash value of the accepted one
+    - What happens if two miners find same block?
+      - both blocks are valid and will be broadcasted through the network
+      - Miners always work "on top of the longest chain of blocks"
+      - In this case: both chains are equally long
+      - Mining power is somehow split (depending on factors such as network latency)
+    - Eventually a new block is found 
+      - makes miners working on top of another chain switch to the new longer chain
+      - probability that two chains grow equally and synchronously decreases exponentially
+      - Eventually one chain becomes to longest chain
+      - Miners get a reward for finding a new block
+    - Policy
+      - The policy of what to accept are very well defined (e.g. block size)
+      - All clients check locally if the policy is satisfied
+        - Deviation from policy causes rejection by the network and thus no econimc incentive!
+        - Rule change by a part of the network &rarr; split of network
+
+  - Policy Specification
+
+    - Use stack-based scripting &rarr; push data on Stack and execute some operations
 
   - Bitcoin Scripts
 
     - Bitcoin Scripts - Bitcoin and Cryptocurrency Technologies: https://www.youtube.com/watch?v=ci1jFDRPoCw
 
-  ​		
+- **Important key facts**
+
+  - Bitcoin uses
+    - PubKey Cryptography to enforce AC on "money"
+    - A Peer-to-Peer Network to publish transactions and blocks
+    - blocks that aggregate transactions to ensure consistency and prevent double spends
+    - Proof-of-Work for publishing blocks to prevent Sybil attacks
+    - A Stack-based scripting language to specify AC policies
+  - Bitcoin is not anonymous but pseudonymous and secure relative to economic assumptions
+
   ​	
