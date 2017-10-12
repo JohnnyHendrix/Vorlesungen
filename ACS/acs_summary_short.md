@@ -1,4 +1,3 @@
-# Summary of Access Control Security
 
 ## 1 	Overview Access Control and Reference Monitor  
 
@@ -107,8 +106,6 @@ $\rightarrow$ Reference Monitor Concept
   - -> visualize resources
 
 
-<img src="images/rm_rvm.png" height="180px" />
-
 Implementing OS-Level Access Control using a RM, the OS as well as HW is required to provide according primitives.
 
 - **Software: Linux**
@@ -144,7 +141,7 @@ Implementing OS-Level Access Control using a RM, the OS as well as HW is require
     - may contain executable code & data
     - runs subset of instructions (e.g. no syscalls)
 
-  <img src="images/enclave.png" height="180px" />
+  <img src="images/enclave.png" height="130px" />
 
   - **Unaddressed attack vectors**
 
@@ -154,7 +151,7 @@ Implementing OS-Level Access Control using a RM, the OS as well as HW is require
 
     - physical attacks
 
-    <img src="images/unaddressed_attack_vectors.png" height="180px" />
+    <img src="images/unaddressed_attack_vectors.png" height="150px" />
 
   - HW-enforced Security requires:
 
@@ -367,9 +364,7 @@ end
 
 ## 4 Attribute based Access Control (ABAC)
 
-- **ABAC**
-
-  - A logical access control methology where authorisation is determined to **perfomr a set of operations by evaluating attributes associated with the subject, object, requestd operations, and, in some cases environment conditions against policy**, rules or relationships that describe the allowable operations for a given set of attributes*
+- **ABAC:** A logical access control methology where authorisation is determined to **perfom a set of operations by evaluating attributes associated with the subject, object, requestd operations, and, in some cases environment conditions against policy**, rules or relationships that describe the allowable operations for a given set of attributes
 
   - Current status
   - Architecture
@@ -458,8 +453,29 @@ In contrast to DAC, MAC, RBAC in ABAC systems Delegation is more complicated, be
 
 
 Issues of Delegation:
--  Attribute Delegation: easy to implement and to use but very complex; maybe many unexpected attributes in system
--  Permission Delegation: very complex to implement because more system knowledge is necessary; harder to set up; No unexpected or undefined attribute sets due to no attribute delegation
+-  **Attribute Delegation:** easy to implement and to use but very complex; maybe many unexpected attributes in system
+-  **Permission Delegation:** very complex to implement because more system knowledge is necessary; harder to set up; No unexpected or undefined attribute sets due to no attribute delegation
+
+#### **Attribute assurance**
+
+- ABAC mit hoher Flexibilität, allerdings auch mit Hindernissen
+
+
+- Attribute können von verschiedensten Instanzen empfangen werden. Zwischen den Instanzen muss also eine Trust-relationship bestehen, damit Attributen vertraut werden kann.
+
+  - Angreifer kann sich das zu nutze machen &rarr; Attr. nochmal validieren
+  - Attribute für jede Entscheidung wichtig &rarr; Verfügbarkeit sichern
+  - Attribute können in Hände von Angreifern kommen&rarr; Integrität sichern, sodass diese die Attribute nicht verändern
+
+  &rarr; **Assurance Levels:** Falls Attr. kein Level trifft &rarr; Zugriff verweigern
+
+  &rarr; Beziehung zu Risikomanagement
+
+- Drei Typen von Metadaten, die für Autorisierungsentscheidung wichtig:
+
+  - **Accuracy** - tech. & policy Grundlagen zur korrektne Verwendung der Attr. (in semantischer und syntaktischer Weise)
+  - **Integrity** - sichere Nutzung gemeinsamer Attribute (über Protokolle) oder Verdecken von Schwachstellen (bei Attribute providern, Entities)
+  - **Availability** - stellt Abrufen und Aktualisieren von Attributen sicher
 
 ## 5 Relationship Based Access Control (ReBAC)
 - Access Control based on social relationship
@@ -500,7 +516,9 @@ Issues of Delegation:
         - **-> Expensiveness** - Regex based on policy description is expensive
         - -> **Performance** - Social graphs can be really large and can be DoS Vulnerable
         - -> **Usability** - most users are unable to use correctly Facebook's privacy selection
-- Combinations of ABAC and ReBAC possible: Node attributes and Edge attributes
+- Combinations of ABAC and ReBAC possible: 
+  - Node attributes: *Occupation = Student/Teacher*
+  - Edge attributes: *friends since June, 2013*
 - Algorithms in access control operate on data:
   - RBAC: roles, users, permissions and mappings
   - ABAC: attributes , users, permissions and mappings
@@ -529,7 +547,7 @@ Issues of Delegation:
   - Design process can be performed **top-down** or **bottom-up** or **both**
   - Mapping to OM-AM
 
-  <img src="images/vsd_omam.png" height="480px" />
+  <img src="images/vsd_omam.png" height="300px" />
 
   - **Objective** - e.g. no unauthorised access
   - **Model** - Mathematical formalization of the objective, e.g. RBAC
@@ -1131,6 +1149,12 @@ Issues of Delegation:
 
   <img src="images/scfs.png" height="320px" />
 
+- **Revokationstypen:**
+
+  - **Eager Revocation:** High resource overhead; immediate reencrpytion of unchanged data with new key
+  - **Lazy Recovation:** Low resource consumption; Delay reencryption 
+    changed and needs to be reencrypted anyways
+
 - Disadvantage of Secure Data Sharing:
 
   - needs resources
@@ -1167,5 +1191,49 @@ Issues of Delegation:
   - Users use their pubkey as pseudonyms &rarr; good for privacy 
   - BUT: Users need to exchange their pseudonyms out-of-band and users have to trust the bank
 
-    ​	
-    ​
+- **Bitcoin**
+
+  - Goal
+
+    - Public verifiability via cryptographic proof
+    - No trust in thrid party middleman needed
+
+  - Public verifiability 
+
+    - Publish all infos required to verify the state of the ledgers
+    - everyone can verify the correcness of all transactions
+      - check signature (is the sign correct?)
+    - Transaction not confidential anymore!
+      - users can create unlimeted number of pubKeys (pseudonyms)
+      - Research: linking between pubkeys and real-word ids possible
+    - Approach so far: publish all transactions including their signatures
+    - Ensures that only the real owner of money can spend the money
+    - Problem: bank supresses certain transactions, bank changes the transaction history
+    - Example attack:
+      1. An employee of the bank buys something from a vendor
+      2. The employee creates a valid transaction transferring funds from his own account to the public key of the vendor
+      3. The bank publishes the transaction
+      4. The vendor sees the published transaction and delivers the goods
+      5. The employee removes the transaction from the transaction graph
+      6. The vendor cannot spend the received funds
+    - Required: Immutability
+
+  - Bank: Transaction moves funds from one account to another account
+
+  - Bitcoin: Transaction moves funds from a specific input to an account to another account
+
+    - One output can only be spent once &rarr; no balance calculation required
+
+    <img src="images/bc_transaction.png" height="320px" />
+
+  - Transaction graph
+
+    <img src="images/bc_transgraph.png" height="180px" />
+
+  - All transactions and their reference can be modeled as adirected acyclic graph
+
+  - No more explicit ledgers
+
+  - Account: Set of all pubkeys of a user
+
+  - Blance: all unspent transaction outputs of a user (Inputs - outputs)
