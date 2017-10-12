@@ -88,6 +88,8 @@ $\rightarrow$ Reference Monitor Concept
 
 - **Implementation - Security Kernels** 
 
+  <img src="images/rm_rvm.png" height="180px" />
+
   - single most often used technique for building highly secure OS
   - But does not mean that it is always in all security systems or that most people agree that the security kernel is the right way to go
   - Opinion of most researchers: wrong approach
@@ -1161,14 +1163,34 @@ Issues of Delegation:
     - Ensures **confidentiality** and **integrity** of data
       - First encrypt data and then sign data before upload to SP
     - Overlay of File System with metadata in metadata files
-      1. *Create* symm FEK creation
-      2. *Create* FSK$_{pub}$
+      1. **Create** symm FEK creation
+      2. **Create** FSK$_{pub}$ and FSK$_{priv}$ (FSK = File Signature Key)
+      3. **Encrypt** file with FEK and store on server
+      4. **Sign** file with FSK$_{priv}$ and attache signature to file
+      5. Store FSK$_{pub}$ in md-file
+      6. **Encrypt** FEK and FSK$_{priv}$ with UA$_{pub}$ and store lockboxes in md-file
+    - UA grants UB only **read access** to file
+      - Encrypt FEK with UB$_{pub}$ and store lockbox in md-file
+    - UA grants UB **write access** to file
+      - Encrypt FSK$_{priv}$ with  UB$_{pub}$ and store lockbox in md-file
+    - Important note: Integrity of metadata is also ensured in md-files
+      - Owner signs md-file after every change with privKey
+      - Problem: Freshness of md-files not ensured &rarr; limit the time a signature is valid
   - **Boxcryptor 2.0**
-    - Confidentiality of data
-    - Integrity of data is not ensured cryptographically
+    - Unlike SiRiUS Boxcrypter ensures only **Confidentiality** of data
+      - Integrity of data is not enforced cryptographically
     - Overlay to existing files system
       - transparent encryption in an additional layer of the file system
       - Metadata are partly stored with the actual data and partly at Boxcryptor‘s key server
+    - Flow:
+      - Initialization
+        1. **Calculate PWK** from password
+        2. **Create** asymmetric key pair UA$_{pub}$ and UA$_{priv}$
+        3. **Encrypt** UA$_{pub}$ and UA$_{priv}$ with PWK and store lockboxes on key server
+      - File encryption
+        4. **Create** symmetric FEK
+        5. **Encrypt** file with FEK and store file on file server
+        6. **Encrypt** FEK with UA$_{pub}$ and store lockbox on file server
 
   <img src="images/scfs.png" height="320px" />
 
